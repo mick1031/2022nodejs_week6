@@ -111,7 +111,7 @@ router.patch('/updatePassword', isAuth, handleErrorAsync(async (req, res, next) 
     password: await bcrypt.hash(password, 12)
   };
 
-  const result = await Post.findByIdAndUpdate(req.user.id, model);
+  const result = await User.findByIdAndUpdate(req.user.id, model);
 
   if (result) {
     res.status(200).json({

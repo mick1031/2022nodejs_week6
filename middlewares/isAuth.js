@@ -26,6 +26,11 @@ const isAuth = async (req, res, next) => {
     })
 
     const currentUser = await User.findById(decoded.id);
+    
+    if(currentUser == null) {
+        return next(appError(400, '未登入', next))
+    }
+
     req.user = currentUser;
 
     next();
