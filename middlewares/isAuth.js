@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require("../models/UserSchema");
+const appError = require("../services/appError");
 
 const isAuth = async (req, res, next) => {
     let token;
@@ -11,7 +12,7 @@ const isAuth = async (req, res, next) => {
     }
 
     if (!token) {
-        console.log('未登入');
+        return next(appError(400, '未登入', next))
     }
 
     const decoded = await new Promise((resolve, reject) => {
@@ -24,13 +25,9 @@ const isAuth = async (req, res, next) => {
         })
     })
 
-    // const currentUser = await User.findById(descoded.id);
-    // req.user = currentUser;
+    const currentUser = await User.findById(decoded.id);
+    req.user = currentUser;
 
-    req.user = {
-        id: decoded.id,
-        name: 'mick',
-    };
     next();
 }
 
