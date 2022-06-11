@@ -64,16 +64,12 @@ router.post('/sign_up', handleErrorAsync(async function (req, res, next) {
 router.post('/sign_in', handleErrorAsync(async (req, res, next) => {
   let { email, password } = req.body;
 
-  if (!email || !confirmPassword) {
+  if (!email || !password) {
     return next(appError(400, '欄位未填寫正確(內容不可為空)', next));
   }
 
   if (!validator.isLength(password, { min: 8 })) {
     return next(appError(400, '密碼字數低於 8 碼', next));
-  }
-
-  if (password !== confirmPassword) {
-    return next(appError(400, '密碼不一致', next));
   }
 
   const user = await User.findOne({ email: email }, 'name +password');
@@ -137,9 +133,32 @@ router.get('/profile', isAuth, handleErrorAsync(async (req, res, next) => {
 }))
 
 router.patch('/profile', isAuth, handleErrorAsync(async (req, res, next) => {
-  res.status(200).json({
-    status: 'success'
-  })
+
+  const {image, name, gender} = req.body;
+
+  if (!name || !gender) {
+    return next(appError(400, '欄位未填寫正確(內容不可為空)', next));
+  }
+
+  if(gender !== '男' && gender !== '女'){
+    return next(appError(400, '性別輸入不正確', next));
+  }
+
+  const model = {
+    image, 
+    name,
+    gender
+  };
+  const result = await User.findByIdAndUpdate(req.user.id, model);
+
+  if (result) {
+    res.status(200).json({
+      status: 'success'
+    })
+  } else {
+    appError(400, '資料庫更新失敗')
+  }
+
 }))
 
 router.get('/check_login', isAuth, handleErrorAsync(async (req, res, next) => {

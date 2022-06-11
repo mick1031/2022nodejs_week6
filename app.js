@@ -8,8 +8,6 @@ const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
 
-const appError = require('./services/appError');
-
 dotenv.config({ path: './config.env' });
 require('./connections/index');
 
